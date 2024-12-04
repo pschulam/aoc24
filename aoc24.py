@@ -1,3 +1,4 @@
+import re
 import sys
 from collections import Counter
 
@@ -56,6 +57,34 @@ def day02():
 
     print('Part 1:', num_safe)
     print('Part 2:', num_safe_dampened)
+
+
+@cli.command()
+def day03():
+    instr_re = re.compile(r'mul\((\d{1,3}),(\d{1,3})\)')
+    cond_re = re.compile(r'do(n\'t)?\(\)')
+
+    def add_muls(segment):
+        return sum(int(x) * int(y) for x, y in instr_re.findall(segment))
+
+    memory = sys.stdin.read()
+
+    total1 = add_muls(memory)
+
+    enabled = True
+    curr = 0
+    total2 = 0
+    for match in cond_re.finditer(memory):
+        m_start, m_end = match.span()
+        if enabled:
+            total2 += add_muls(memory[curr:m_start])
+        enabled = match.group() == 'do()'
+        curr = m_end
+    if enabled:
+        total2 += add_muls(memory[curr:])
+
+    print('Part 1:', total1)
+    print('Part 2:', total2)
 
 
 def diff_sequence(xs):
