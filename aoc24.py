@@ -87,6 +87,55 @@ def day03():
     print('Part 2:', total2)
 
 
+@cli.command()
+def day04():
+    puzzle = [list(line.strip()) for line in sys.stdin]
+    nrow = len(puzzle)
+    ncol = len(puzzle[0])
+
+    count1 = 0
+    for y in range(nrow):
+        for x in range(ncol):
+            if puzzle[y][x] != 'X':
+                continue
+            for dx in [-1, 0, 1]:
+                for dy in [-1, 0, 1]:
+                    if dx == 0 and dy == 0:
+                        continue
+                    ys = [y + n*dy for n in range(4)]
+                    xs = [x + n*dx for n in range(4)]
+                    if any(y < 0 or y >= nrow for y in ys):
+                        continue
+                    if any(x < 0 or x >= ncol for x in xs):
+                        continue
+                    word = ''.join([puzzle[y][x] for y, x in zip(ys, xs)])
+                    count1 += word == 'XMAS'
+
+    count2 = 0
+    for y in range(nrow):
+        for x in range(ncol):
+            if puzzle[y][x] != 'A':
+                continue
+            if y-1 < 0 or y+1 >= nrow or x-1 < 0 or x+1 >= ncol:
+                continue
+            corners = ''.join([
+                puzzle[y + dy][x + dx]
+                for dy, dx in [(-1, -1), (1, 1), (-1, 1), (1, -1)]
+            ])
+            count2 += (
+                corners == 'MSMS'
+                or
+                corners == 'MSSM'
+                or
+                corners == 'SMMS'
+                or
+                corners == 'SMSM'
+            )
+
+    print('Part 1:', count1)
+    print('Part 2:', count2)
+
+
 def diff_sequence(xs):
     return [y - x for x, y in zip(xs, xs[1:])]
 
